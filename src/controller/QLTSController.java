@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.swing.ButtonModel;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
@@ -20,6 +21,19 @@ import javax.swing.table.DefaultTableModel;
 
 import org.w3c.dom.events.EventTarget;
 import org.w3c.dom.views.AbstractView;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import view.QLTSView;
 
@@ -400,7 +414,7 @@ public class QLTSController implements ActionListener, ListSelectionListener{
 				System.out.println(e2.getMessage());
 			}
 		}else if(ac == "Xóa Form") {
-//			this.xoaForm();
+			this.xoaForm();
 			
 		}else if(ac == "Tìm kiếm") {
 			String tenTinh = this.view.getComboBoxQueQuan().getSelectedItem().toString();
@@ -442,6 +456,154 @@ public class QLTSController implements ActionListener, ListSelectionListener{
 			}
 		}else if(ac == "Hủy Tìm") {
 			this.loadDanhSach(this.view.getModel().getDanhSachThiSinh());
+		}else if(ac == "Open") {
+			try {
+				JFileChooser fc = new JFileChooser();
+				int returnVal = fc.showOpenDialog(this.view);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					String bathFile = file.getAbsolutePath();
+					String nameFile = file.getName();
+					if (nameFile.endsWith(".xlsx")) {
+						try {
+							FileInputStream fileInput = new FileInputStream(bathFile);
+							XSSFWorkbook wb = new XSSFWorkbook(fileInput);
+							XSSFSheet sheet = wb.getSheetAt(0);
+							FormulaEvaluator formula = wb.getCreationHelper().createFormulaEvaluator();
+							ArrayList<ThiSinh> listThiSinh = new ArrayList<>();
+
+							for (Row row : sheet) {
+								double maThiSinhCheck = row.getCell(0).getNumericCellValue();
+								int maThiSinh = (int) maThiSinhCheck;
+								String hoTen = row.getCell(1).getStringCellValue();
+								String tinhCheck = row.getCell(2).getStringCellValue();
+								Tinh tinh = new Tinh(1, tinhCheck);
+								String ngaySinhCheck = row.getCell(3).getStringCellValue();
+								String[] subNgaySinh = ngaySinhCheck.split("/");
+								Date ngaySinh = new Date(Integer.parseInt(subNgaySinh[2]),
+										Integer.parseInt(subNgaySinh[1]), Integer.parseInt(subNgaySinh[0]));
+								Boolean gioiTinh = row.getCell(4).getStringCellValue() == "Nam" ? true : false;
+								float diemMon1 = (float) row.getCell(5).getNumericCellValue();
+								float diemMon2 = (float) row.getCell(6).getNumericCellValue();
+								float diemMon3 = (float) row.getCell(7).getNumericCellValue();
+
+								ThiSinh ts = new ThiSinh(maThiSinh, hoTen, tinh, ngaySinh, gioiTinh, diemMon1, diemMon2,
+										diemMon3);
+
+								listThiSinh.add(ts);
+							}
+							this.loadDanhSach(listThiSinh);
+							wb.close();
+							fileInput.close();
+
+						} catch (Exception e2) {
+							// TODO: handle exception
+						}
+					} else {
+						JOptionPane.showMessageDialog(this.view,
+								"File chọn không hợp lệ. Xin vui lòng chọn file có đuôi .xlsx!!!");
+						return;
+					}
+				} 
+			} catch (Exception e2) {
+				// TODO: handle exception
+			}
+		}else if(ac == "Save") {
+			try {
+				JFileChooser fc = new JFileChooser();
+				int returnVal = fc.showSaveDialog(this.view);
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					String bathFile = file.getAbsolutePath();
+					String nameFile = file.getName();
+					if (nameFile.endsWith(".xlsx")) {
+						try {
+							// Tạo một Workbook mới
+					        XSSFWorkbook workbook = new XSSFWorkbook();
+					        
+					        // Tạo một Sheet mới trong Workbook
+					        XSSFSheet sheet = workbook.createSheet("Sheet1");
+					        
+					        // Lấy ra mô hình bảng từ JTable
+					        DefaultTableModel model = (DefaultTableModel)this.view.getTable().getModel();
+
+					        // Lấy số hàng trong bảng
+					        int numRows = model.getRowCount();
+
+					        // Lấy số cột trong bảng
+					        int numCols = model.getColumnCount();
+					        
+					        int rowNum = 0;
+					        // Lặp qua các hàng trong bảng để lấy dữ liệu
+					        for (int rowTang = 0; rowTang < numRows; rowTang++) {
+					        	Row row = sheet.createRow(rowNum++);
+					        	int colNum = 0;
+					            // Lặp qua các cột trong hàng hiện tại để lấy giá trị
+					            for (int col = 0; col < numCols; col++) {
+					            	Object cellValue = model.getValueAt(rowTang, col);
+					                // Sử dụng giá trị của ô để làm gì đó
+					            	Cell cell = row.createCell(colNum++);
+					                if (cellValue instanceof String) {
+					                    cell.setCellValue((String) cellValue);
+					                } else if (cellValue instanceof Integer) {
+					                    cell.setCellValue((int) cellValue);
+					                }else if(cellValue instanceof Float) {
+					                	cell.setCellValue((float) cellValue);
+					                }
+					            }
+					        }
+					        
+//					        // Tạo một mảng chứa dữ liệu bảng
+//					        Object[][] data = {
+//					            {"Name", "Age", "City"},
+//					            {"John Doe", 25, "New York"},
+//					            {"Jane Smith", 30, "San Francisco"},
+//					            {"Tom Wilson", 40, "Chicago"}
+//					        };
+//					        
+//					       
+//					        
+//					        // Duyệt qua mảng dữ liệu và tạo các hàng và ô trong Sheet
+//					        int rowNum = 0;
+//					        for (Object[] rowData : data) {
+//					            Row row = sheet.createRow(rowNum++);
+//					            int colNum = 0;
+//					            for (Object field : rowData) {
+//					                Cell cell = row.createCell(colNum++);
+//					                if (field instanceof String) {
+//					                    cell.setCellValue((String) field);
+//					                } else if (field instanceof Integer) {
+//					                    cell.setCellValue((Integer) field);
+//					                }
+//					            }
+//					        }
+					        
+					        // Tạo một file Excel từ Workbook
+					        FileOutputStream outputStream = new FileOutputStream(bathFile);
+					        workbook.write(outputStream);
+					        workbook.close();
+					        outputStream.close();
+					        
+							
+						} catch (Exception e2) {
+							// TODO: handle exception
+						}
+					} else {
+						JOptionPane.showMessageDialog(this.view,
+								"File lưu không hợp lệ. Xin vui lòng lưu file có đuôi .xlsx!!!");
+						return;
+					}
+				} 
+			} catch (Exception e2) {
+				// TODO: handle exception
+			}
+		}else if(ac == "Exit") {
+			int luaChon = JOptionPane.showOptionDialog(this.view, "Bạn có thật sự muốn thoát chương trình?", "Exit", JOptionPane.YES_NO_OPTION, 0, null, null, e);
+			if(luaChon == JOptionPane.YES_OPTION) {
+				System.exit(0);
+			}else {
+				return;
+			}
 		}
 		 
 	//bắt sự kiện khi ta kích chọn 1 hàng trong bảng table

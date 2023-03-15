@@ -222,14 +222,17 @@ public class QLTSView extends JFrame {
 		menuBar.add(menuFile);
 		
 		JMenuItem menuOpen = new JMenuItem("Open");
+		menuOpen.addActionListener(action);
 		menuOpen.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		menuFile.add(menuOpen);
 		
-		JMenuItem menuClose = new JMenuItem("Close");
-		menuClose.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-		menuFile.add(menuClose);
+		JMenuItem menuSave = new JMenuItem("Save");
+		menuSave.addActionListener(action);
+		menuSave.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+		menuFile.add(menuSave);
 		
 		JMenuItem menuExit = new JMenuItem("Exit");
+		menuExit.addActionListener(action);
 		menuExit.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 		menuFile.add(menuExit);
 		

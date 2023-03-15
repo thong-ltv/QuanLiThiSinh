@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Users/THONG/Downloads/poi/poi/xmlbeans-3.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/THONG/Downloads/poi/poi/commons-collections4-4.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/THONG/Downloads/poi/poi/poi-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/THONG/Downloads/poi/poi/poi-examples-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/THONG/Downloads/poi/poi/poi-excelant-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/THONG/Downloads/poi/poi/poi-ooxml-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/THONG/Downloads/poi/poi/poi-ooxml-schemas-3.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/THONG/Downloads/poi/poi/poi-scratchpad-3.17.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
