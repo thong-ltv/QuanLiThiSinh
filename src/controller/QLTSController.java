@@ -604,6 +604,8 @@ public class QLTSController implements ActionListener, ListSelectionListener{
 			}else {
 				return;
 			}
+		}else if(ac == "About me") {
+			JOptionPane.showMessageDialog(this.view, "Phần mềm quản lí thí sinh phiên bản 1.0!!!");
 		}
 		 
 	//bắt sự kiện khi ta kích chọn 1 hàng trong bảng table
@@ -768,5 +770,10 @@ public class QLTSController implements ActionListener, ListSelectionListener{
 		this.view.getTextFieldDiemMon3().setText("");
 		this.view.getComboBox_QueQuan().setSelectedItem("");
 		this.view.getBtnGioiTinh().clearSelection();
+	}
+	
+	//kiểm tra đầu vào của thí sinh
+	public void kiemTraDauVao() {
+		
 	}
 }
